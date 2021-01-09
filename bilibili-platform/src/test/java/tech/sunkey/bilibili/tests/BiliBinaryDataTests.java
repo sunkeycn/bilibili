@@ -76,7 +76,7 @@ public class BiliBinaryDataTests {
 
     public static void main(String[] args) throws Exception {
         DataView bb = DataView.fromBase64(binary);
-        WsPkg pkg = c(bb);
+        WsPkg pkg = c(0, bb);
         System.out.println(pkg);
 
 
@@ -87,18 +87,28 @@ public class BiliBinaryDataTests {
         byte[] unc = uncompress(array);
         System.out.println("unc:" + unc.length);
         DataView uncbb = DataView.of(unc);
-        WsPkg uncP = c(uncbb);
-        System.out.println(uncP);
-        System.out.println(uncbb.slice(uncP.headerLen, uncP.packetLen - 1).string());
+
+        int offset = 0;
+        while (offset < uncbb.size()) {
+            WsPkg uncP = c(offset, uncbb);
+            System.out.println(uncP);
+
+            offset += uncP.packetLen;
+        }
+
+
     }
 
-    public static WsPkg c(DataView bb) {
+    public static WsPkg c(int offset, DataView bb) {
         WsPkg pkg = new WsPkg();
-        pkg.packetLen = bb.getInt(WS_PACKAGE_OFFSET);
-        pkg.headerLen = bb.getShort(WS_HEADER_OFFSET);
-        pkg.ver = bb.getShort(WS_VERSION_OFFSET);
-        pkg.op = bb.getInt(WS_OPERATION_OFFSET);
-        pkg.seq = bb.getInt(WS_SEQUENCE_OFFSET);
+        pkg.packetLen = bb.getInt(offset + WS_PACKAGE_OFFSET);
+        pkg.headerLen = bb.getShort(offset + WS_HEADER_OFFSET);
+        pkg.ver = bb.getShort(offset + WS_VERSION_OFFSET);
+        pkg.op = bb.getInt(offset + WS_OPERATION_OFFSET);
+        pkg.seq = bb.getInt(offset + WS_SEQUENCE_OFFSET);
+        if (pkg.ver == 0) {
+            pkg.data = bb.slice(offset + pkg.headerLen, offset + pkg.packetLen - 1).string();
+        }
         return pkg;
     }
 
@@ -145,6 +155,7 @@ public class BiliBinaryDataTests {
         int ver;
         int op;
         int seq;
+        String data;
     }
 
 }
