@@ -60,7 +60,7 @@ public class BiliBinaryDataTests {
         while ((pos = inf.inflate(buf)) != -1) {
             arr.write(buf, 0, pos);
         }
-        print(DataView.fromByteArray(arr));
+       print(DataView.fromByteArray(arr));
     }
 
 

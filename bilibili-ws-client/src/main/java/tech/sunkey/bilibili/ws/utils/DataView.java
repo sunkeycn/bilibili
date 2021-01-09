@@ -44,11 +44,17 @@ public class DataView {
     }
 
     public byte[] array() {
-        return Arrays.copyOfRange(this.data, this.start, this.end);
+        byte[] res = new byte[size()];
+        System.arraycopy(this.data, this.start, res, 0, res.length);
+        return res;
     }
 
     public InputStream stream() {
         return new StreamImpl();
+    }
+
+    public String base64() {
+        return Base64.getEncoder().encodeToString(array());
     }
 
     public String string(Charset charset) {
@@ -112,11 +118,11 @@ public class DataView {
         return fromByteArray(new ByteArray().write(in));
     }
 
-    public static short makeShort(byte b1, byte b0) {
+    private static short makeShort(byte b1, byte b0) {
         return (short) ((b1 << 8) | (b0 & 0xff));
     }
 
-    public static int makeInt(byte b3, byte b2, byte b1, byte b0) {
+    private static int makeInt(byte b3, byte b2, byte b1, byte b0) {
         return (b3 << 24) |
                 ((b2 & 0xff) << 16) |
                 ((b1 & 0xff) << 8) |
