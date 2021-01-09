@@ -1,5 +1,7 @@
 package tech.sunkey.bilibili.ws.utils;
 
+import io.netty.buffer.ByteBuf;
+
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -116,6 +118,12 @@ public class DataView {
 
     public static DataView fromStream(InputStream in) {
         return fromByteArray(new ByteArray().write(in));
+    }
+
+    public static DataView fromByteBuf(ByteBuf bb) {
+        byte[] data = new byte[bb.readableBytes()];
+        bb.readBytes(data);
+        return of(data);
     }
 
     private static short makeShort(byte b1, byte b0) {

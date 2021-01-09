@@ -1,7 +1,6 @@
 package tech.sunkey.bilibili.tests;
 
 import lombok.extern.slf4j.Slf4j;
-import tech.sunkey.bilibili.ws.NettyWsClient;
 
 import java.net.URI;
 
@@ -42,9 +41,14 @@ public class DanmuLoadTests {
 
 
     public static void main(String[] args) throws Exception {
-        String inf = "https://api.live.bilibili.com/room/v1/Room/room_init?id=5887574";
-        NettyWsClient client = new NettyWsClient();
-        client.connect(URI.create("wss://tx-sh-live-comet-02.chat.bilibili.com:443/sub"));
+        //String inf = "https://api.live.bilibili.com/room/v1/Room/room_init?id=5887574";
+        //NettyWsClient client = new NettyWsClient();
+        //client.connect(URI.create("wss://tx-sh-live-comet-02.chat.bilibili.com:443/sub"));
+
+        URI uri = new URI("wss://tx-sh-live-comet-02.chat.bilibili.com:443/sub");
+
+        System.out.println(uri.getScheme());
+
     }
 
 
