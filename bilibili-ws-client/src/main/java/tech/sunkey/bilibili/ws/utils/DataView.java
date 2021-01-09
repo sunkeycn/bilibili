@@ -16,11 +16,11 @@ public class DataView {
     private final int start, end;
 
     public int start() {
-        return start;
+        return this.start;
     }
 
     public int end() {
-        return end;
+        return this.end;
     }
 
     public short getShort(int index) {
@@ -36,11 +36,15 @@ public class DataView {
     }
 
     public int size() {
-        return end - start + 1;
+        return this.end - this.start + 1;
+    }
+
+    public byte[] source() {
+        return this.data;
     }
 
     public byte[] array() {
-        return Arrays.copyOfRange(data, start, end);
+        return Arrays.copyOfRange(this.data, this.start, this.end);
     }
 
     public InputStream stream() {
@@ -59,18 +63,22 @@ public class DataView {
         if (index < 0) {
             throw new IndexOutOfBoundsException();
         }
-        int idx = index + start;
-        if (idx > end) {
+        int idx = index + this.start;
+        if (idx > this.end) {
             throw new IndexOutOfBoundsException();
         }
-        return data[idx];
+        return this.data[idx];
+    }
+
+    public DataView slice(int start) {
+        return slice(start, this.end);
     }
 
     public DataView slice(int start, int end) {
         if (start < this.start || end > this.end || start > end) {
             throw new IndexOutOfBoundsException();
         }
-        return new DataView(data, start, end);
+        return new DataView(this.data, start, end);
     }
 
     private DataView(byte[] data, int start, int end) {
@@ -101,7 +109,7 @@ public class DataView {
     }
 
     public static DataView fromStream(InputStream in) {
-        return fromByteArray(new ByteArray().read(in));
+        return fromByteArray(new ByteArray().write(in));
     }
 
     public static short makeShort(byte b1, byte b0) {

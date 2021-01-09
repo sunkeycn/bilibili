@@ -38,14 +38,20 @@ public class ByteArray {
         this.bufSize = bufSize;
     }
 
-    public ByteArray add(byte[] bytes) {
-        list.addLast(bytes);
-        size += bytes.length;
+    public ByteArray write(byte[] bytes) {
+        return write(bytes, 0, bytes.length);
+    }
+
+    public ByteArray write(byte[] bytes, int offset, int len) {
+        byte[] tow = new byte[len];
+        System.arraycopy(bytes, offset, tow, 0, len);
+        list.addLast(tow);
+        size += len;
         return this;
     }
 
     @SneakyThrows
-    public ByteArray read(InputStream in) {
+    public ByteArray write(InputStream in) {
         byte[] buf = new byte[bufSize];
         int pos;
         int total = 0;
