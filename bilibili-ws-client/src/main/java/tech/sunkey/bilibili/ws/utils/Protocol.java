@@ -2,6 +2,7 @@ package tech.sunkey.bilibili.ws.utils;
 
 import io.netty.buffer.ByteBuf;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
+import tech.sunkey.bilibili.ws.dto.Constants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,16 +11,7 @@ import java.util.List;
  * @author Sunkey
  * @since 2021-01-09 4:59 下午
  **/
-public class Protocol {
-
-    public static final int WS_PACKAGE_OFFSET = 0;
-    public static final int WS_HEADER_OFFSET = 4;
-    public static final int WS_VERSION_OFFSET = 6;
-    public static final int WS_OPERATION_OFFSET = 8;
-    public static final int WS_SEQUENCE_OFFSET = 12;
-
-    public static final int WS_BODY_PROTOCOL_VERSION_NORMAL = 0;
-    public static final int WS_BODY_PROTOCOL_VERSION_DEFLATE = 2;
+public class Protocol implements Constants {
 
     public static List<BiliWsPackage> read(ByteBuf in) {
         return read(DataView.fromByteBuf(in));

@@ -1,0 +1,34 @@
+package tech.sunkey.bilibili.ws.tests;
+
+import io.netty.buffer.ByteBuf;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
+import tech.sunkey.bilibili.ws.utils.DataView;
+import tech.sunkey.bilibili.ws.utils.InflateUtils;
+import tech.sunkey.bilibili.ws.utils.Protocol;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.zip.Inflater;
+
+/**
+ * @author Sunkey
+ * @since 2021-01-08 12:54 下午
+ **/
+public class BiliBinaryDataTests {
+
+    static String base64 = "AAAFCQAQAAAAAAAFAAAAAHsiY21kIjoiTk9USUNFX01TRyIsImZ1bGwiOnsiaGVhZF9pY29uIjoiaHR0cDovL2kwLmhkc2xiLmNvbS9iZnMvbGl2ZS9iMjlhZGQ2NjQyMTU4MGMzZTY4MGQ3ODRhODI3MjAyZTUxMmE0MGEwLndlYnAiLCJ0YWlsX2ljb24iOiJodHRwOi8vaTAuaGRzbGIuY29tL2Jmcy9saXZlLzgyMmRhNDgxZmRhYmE5ODZkNzM4ZGI1ZDhmZDQ2OWZmYTk1YThmYTEud2VicCIsImhlYWRfaWNvbl9mYSI6Imh0dHA6Ly9pMC5oZHNsYi5jb20vYmZzL2xpdmUvNDk4NjlhNTJkNjIyNWEzZTcwYmJmMWY0ZGE2M2YxOTlhOTUzODRiMi5wbmciLCJ0YWlsX2ljb25fZmEiOiJodHRwOi8vaTAuaGRzbGIuY29tL2Jmcy9saXZlLzM4Y2IyYTlmMTIwOWIxNmMwZjE1MTYyYjBiNTUzZTNiMjhkOWYxNmYucG5nIiwiaGVhZF9pY29uX2ZhbiI6MjQsInRhaWxfaWNvbl9mYW4iOjQsImJhY2tncm91bmQiOiIjNjZBNzRFRkYiLCJjb2xvciI6IiNGRkZGRkZGRiIsImhpZ2hsaWdodCI6IiNGREZGMkZGRiIsInRpbWUiOjIwfSwiaGFsZiI6eyJoZWFkX2ljb24iOiJodHRwOi8vaTAuaGRzbGIuY29tL2Jmcy9saXZlL2VjOWIzNzRjYWVjNWJkODQ4OThmMzc4MGExMDE4OWJlOTZiODZkNGUucG5nIiwidGFpbF9pY29uIjoiIiwiYmFja2dyb3VuZCI6IiM4NUI5NzFGRiIsImNvbG9yIjoiI0ZGRkZGRkZGIiwiaGlnaGxpZ2h0IjoiI0ZERkYyRkZGIiwidGltZSI6MTV9LCJzaWRlIjp7ImhlYWRfaWNvbiI6IiIsImJhY2tncm91bmQiOiIiLCJjb2xvciI6IiIsImhpZ2hsaWdodCI6IiIsImJvcmRlciI6IiJ9LCJyb29taWQiOjIyNzMyMjE4LCJyZWFsX3Jvb21pZCI6MjI3MzIyMTgsIm1zZ19jb21tb24iOiJcdTAwM2Ml5pyo5p2/5aSn5LuZJVx1MDAzZeaKleWWglx1MDAzYyXprZTnjovmrarlsI/lp5Dlp5AlXHUwMDNlMeS4quWwj+eUteinhumjnuiIue+8jOeCueWHu+WJjeW+gFRB55qE5oi/6Ze05ZCn77yBIiwibXNnX3NlbGYiOiJcdTAwM2Ml5pyo5p2/5aSn5LuZJVx1MDAzZeaKleWWglx1MDAzYyXprZTnjovmrarlsI/lp5Dlp5AlXHUwMDNlMeS4quWwj+eUteinhumjnuiIue+8jOW/q+adpeWbtOinguWQp++8gSIsImxpbmtfdXJsIjoiaHR0cHM6Ly9saXZlLmJpbGliaWxpLmNvbS8yMjczMjIxOD9mcm9tPTI4MDAzXHUwMDI2ZXh0cmFfanVtcF9mcm9tPTI4MDAzXHUwMDI2bGl2ZV9sb3R0ZXJ5X3R5cGU9MVx1MDAyNmJyb2FkY2FzdF90eXBlPTEiLCJtc2dfdHlwZSI6Miwic2hpZWxkX3VpZCI6LTEsImJ1c2luZXNzX2lkIjoiMjUiLCJzY2F0dGVyIjp7Im1pbiI6MCwibWF4IjowfX0=";
+
+    public static void main(String[] args) {
+        List<BiliWsPackage> list = Protocol.read(DataView.fromBase64(base64));
+        for (BiliWsPackage pkg : list) {
+            System.out.println(pkg);
+        }
+    }
+
+}

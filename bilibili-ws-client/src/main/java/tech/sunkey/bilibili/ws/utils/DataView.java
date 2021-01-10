@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 
 /**
