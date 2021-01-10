@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
  **/
 @RequiredArgsConstructor
 @Getter
-public enum Operation implements Constants {
+public enum Operation {
 
-    HeartBeat(WS_OP_HEARTBEAT),
-    HeartBeatReply(WS_OP_HEARTBEAT_REPLY),
-    Message(WS_OP_MESSAGE),
-    Auth(WS_OP_USER_AUTHENTICATION),
-    ConnectSuccess(WS_OP_CONNECT_SUCCESS),
+    HeartBeat(Constants.WS_OP_HEARTBEAT),
+    HeartBeatReply(Constants.WS_OP_HEARTBEAT_REPLY),
+    Message(Constants.WS_OP_MESSAGE),
+    UserAuth(Constants.WS_OP_USER_AUTHENTICATION),
+    ConnectSuccess(Constants.WS_OP_CONNECT_SUCCESS),
 
     ;
     private final int code;

@@ -1,6 +1,7 @@
 package tech.sunkey.bilibili.api;
 
-import tech.sunkey.bilibili.api.dto.danmu.DanmuInfoResult;
+import tech.sunkey.bilibili.api.dto.live.DanmuInfoResult;
+import tech.sunkey.bilibili.api.dto.live.RoomInitResult;
 import tech.sunkey.bilibili.api.utils.BaseAPI;
 
 /**
@@ -9,8 +10,12 @@ import tech.sunkey.bilibili.api.utils.BaseAPI;
  **/
 public class LiveAPI extends BaseAPI {
 
-    public DanmuInfoResult getDanmuInfo(int roomid) {
-        return get(Config.getRoomInfoPath, DanmuInfoResult.class, roomid);
+    public DanmuInfoResult getDanmuInfo(int longRoomId) {
+        return get(Config.getDanmuInfoPath, DanmuInfoResult.class, longRoomId);
+    }
+
+    public RoomInitResult roomInit(int roomId) {
+        return get(Config.roomInitPath, RoomInitResult.class, roomId);
     }
 
 }

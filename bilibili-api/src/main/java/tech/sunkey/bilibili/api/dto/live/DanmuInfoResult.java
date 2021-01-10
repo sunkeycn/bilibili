@@ -1,4 +1,4 @@
-package tech.sunkey.bilibili.api.dto.danmu;
+package tech.sunkey.bilibili.api.dto.live;
 
 import lombok.*;
 import tech.sunkey.bilibili.api.dto.BaseResult;

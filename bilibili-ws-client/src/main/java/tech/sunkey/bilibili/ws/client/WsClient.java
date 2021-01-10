@@ -1,6 +1,7 @@
 package tech.sunkey.bilibili.ws.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -14,10 +15,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 
@@ -30,6 +28,8 @@ import java.net.URI;
 
 @Slf4j
 public class WsClient {
+
+    protected Channel channel;
 
     protected DefaultHttpHeaders createHttpHeaders(Config config) {
         return new DefaultHttpHeaders();
@@ -53,7 +53,8 @@ public class WsClient {
     }
 
     public void connect(Config config) {
-        new Bootstrap().group(new NioEventLoopGroup())
+        log.info("Prepare connect : {}", config.getUrl());
+        this.channel = new Bootstrap().group(new NioEventLoopGroup())
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -64,7 +65,14 @@ public class WsClient {
                 .connect(config.getHost(), config.getPort())
                 .addListener(a -> {
                     log.info("connect {} success.", config.getUrl());
-                });
+                }).channel();
+    }
+
+    public synchronized void send(BiliWsPackage message) {
+        if (this.channel == null) {
+            throw new IllegalStateException();
+        }
+        channel.writeAndFlush(message);
     }
 
     @RequiredArgsConstructor
@@ -92,6 +100,7 @@ public class WsClient {
         }
     }
 
+    @ToString
     public static class Config {
 
         @Getter

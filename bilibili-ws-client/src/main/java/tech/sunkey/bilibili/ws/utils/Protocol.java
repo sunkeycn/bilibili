@@ -1,8 +1,11 @@
 package tech.sunkey.bilibili.ws.utils;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 import tech.sunkey.bilibili.ws.dto.Constants;
+import tech.sunkey.bilibili.ws.dto.Operation;
+import tech.sunkey.bilibili.ws.dto.UserAuth;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +15,23 @@ import java.util.List;
  * @since 2021-01-09 4:59 下午
  **/
 public class Protocol implements Constants {
+
+    public static BiliWsPackage heartBeat() {
+        return newPackage(Operation.HeartBeat, "[Object object]");
+    }
+
+    public static BiliWsPackage userAuth(UserAuth userAuth) {
+        return newPackage(Operation.UserAuth, userAuth);
+    }
+
+    public static BiliWsPackage newPackage(Operation operation, Object data) {
+        BiliWsPackage pkg = new BiliWsPackage();
+        pkg.setVersion(1);
+        pkg.setSequence(1);
+        pkg.setOperation(operation.getCode());
+        pkg.setData(data);
+        return pkg;
+    }
 
     public static List<BiliWsPackage> read(ByteBuf in) {
         return read(DataView.fromByteBuf(in));
@@ -39,18 +59,28 @@ public class Protocol implements Constants {
         }
     }
 
-    public static byte[] processPackage(BiliWsPackage pkg) {
+    private static byte[] processPackage(BiliWsPackage pkg) {
         pkg.setHeaderLength(16);
         pkg.setVersion(1);
         pkg.setSequence(1);
         int len = pkg.getHeaderLength();
         byte[] data = null;
         if (pkg.getData() != null) {
-            data = pkg.getData().getBytes();
+            data = getDataAsBytes(pkg.getData());
             len += data.length;
         }
         pkg.setPackageLength(len);
         return data;
+    }
+
+    private static byte[] getDataAsBytes(Object data) {
+        if (data == null) {
+            return new byte[0];
+        }
+        if (data instanceof String) {
+            return ((String) data).getBytes();
+        }
+        return JSON.toJSONString(data).getBytes();
     }
 
     public static void write(BiliWsPackage pkg, ByteBuf bb) {
@@ -72,7 +102,7 @@ public class Protocol implements Constants {
         pkg.setVersion(buffer.getShort(offset + WS_VERSION_OFFSET));
         pkg.setOperation(buffer.getInt(offset + WS_OPERATION_OFFSET));
         pkg.setSequence(buffer.getInt(offset + WS_SEQUENCE_OFFSET));
-        if (pkg.getVersion() == WS_BODY_PROTOCOL_VERSION_NORMAL) {
+        if (pkg.getVersion() != WS_BODY_PROTOCOL_VERSION_DEFLATE) {
             DataView dataBuffer =
                     buffer.slice(offset + pkg.getHeaderLength(),
                             offset + pkg.getPackageLength() - 1);

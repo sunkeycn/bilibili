@@ -1,33 +1,23 @@
 {
   "code": 0,
-  "message": "0",
-  "ttl": 1,
+  "msg": "ok",
+  "message": "ok",
   "data": {
-    "group": "live",
-    "business_id": 0,
-    "refresh_row_factor": 0.125,
-    "refresh_rate": 100,
-    "max_delay": 5000,
-    "token": "Eafa2nLJ4fmRh0c0yVUG2K4n-qiI1hbnJ8MoNim2WLEkx00F47AxczNN7HorNQYKvQ6xaRs7-rN4a3IT9Q7MJHy9ePTI-J3sweDAAfAVsJ--0vvFdSu6eoa5CteykMMaKjfFh4stOADyhI_He7XuHus=",
-    "host_list": [
-      {
-        "host": "ks-bj-live-comet-05.chat.bilibili.com",
-        "port": 2243,
-        "wss_port": 443,
-        "ws_port": 2244
-      },
-      {
-        "host": "ks-sh-live-comet-01.chat.bilibili.com",
-        "port": 2243,
-        "wss_port": 443,
-        "ws_port": 2244
-      },
-      {
-        "host": "broadcastlv.chat.bilibili.com",
-        "port": 2243,
-        "wss_port": 443,
-        "ws_port": 2244
-      }
-    ]
+    "room_id": 7734200,
+    "short_id": 6,
+    "uid": 50329118,
+    "need_p2p": 0,
+    "is_hidden": false,
+    "is_locked": false,
+    "is_portrait": false,
+    "live_status": 1,
+    "hidden_till": 0,
+    "lock_till": 0,
+    "encrypted": false,
+    "pwd_verified": false,
+    "live_time": 1610179433,
+    "room_shield": 1,
+    "is_sp": 0,
+    "special_type": 0
   }
 }

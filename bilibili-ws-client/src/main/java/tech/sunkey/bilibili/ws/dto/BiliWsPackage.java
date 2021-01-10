@@ -18,6 +18,6 @@ public class BiliWsPackage {
     private int version;
     private int operation;
     private int sequence;
-    private String data;
+    private Object data;
 
 }

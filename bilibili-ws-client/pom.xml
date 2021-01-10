@@ -28,6 +28,15 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.onway.hestia</groupId>
+            <artifactId>common-utils</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

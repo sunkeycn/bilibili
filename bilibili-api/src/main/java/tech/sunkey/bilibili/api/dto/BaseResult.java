@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BaseResult<T> {
+public class BaseResult {
 
     private int code;
     private String message;
