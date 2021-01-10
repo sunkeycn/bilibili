@@ -10,6 +10,7 @@
     <modules>
         <module>bilibili-ws-client</module>
         <module>bilibili-platform</module>
+        <module>bilibili-api</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -31,6 +32,17 @@
         <dependencies>
 
             <dependency>
+                <groupId>tech.sunkey</groupId>
+                <artifactId>bilibili-ws-client</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>tech.sunkey</groupId>
+                <artifactId>bilibili-api</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>1.18.16</version>
@@ -40,6 +52,19 @@
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>4.1.56.Final</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.62</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.onway.hestia</groupId>
+                <artifactId>common-utils</artifactId>
+                <version>3.1.7-SNAPSHOT</version>
+                <scope>test</scope>
             </dependency>
 
         </dependencies>

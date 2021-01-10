@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bilibili-ws-client</artifactId>
+    <artifactId>bilibili-api</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,12 +21,17 @@
             <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.onway.hestia</groupId>
+            <artifactId>common-utils</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
