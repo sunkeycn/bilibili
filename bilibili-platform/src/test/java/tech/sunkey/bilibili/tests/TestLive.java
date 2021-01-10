@@ -1,8 +1,9 @@
 package tech.sunkey.bilibili.tests;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.handler.logging.LogLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.api.LiveAPI;
 import tech.sunkey.bilibili.api.dto.live.DanmuInfoResult;
 import tech.sunkey.bilibili.api.dto.live.RoomInitResult;
@@ -17,6 +18,8 @@ import tech.sunkey.bilibili.ws.utils.Protocol;
  * @author Sunkey
  * @since 2021-01-10 7:20 下午
  **/
+
+@Slf4j
 public class TestLive {
 
     public static void main(String[] args) {
@@ -27,14 +30,16 @@ public class TestLive {
         System.out.println("RoomId=" + roomId);
         DanmuInfoResult danmuInfo = api.getDanmuInfo(roomId);
         System.out.println(danmuInfo);
+        UserAuth userAuth = UserAuth.userAuth(roomId, danmuInfo.getData().getToken());
+        log.info("UserAuth: {}", JSON.toJSONString(userAuth));
         client().connect(new WsClient.Config()
                 .url(getWssUrl(danmuInfo.getData()))
-                .logLevel(LogLevel.INFO)
-                .handler(new HandlerImpl(UserAuth.userAuth(roomId, danmuInfo.getData().getToken()))));
+                //.logLevel(LogLevel.INFO)
+                .handler(new HandlerImpl(userAuth)));
     }
 
     public static WsClient client() {
-        return new WsClient();
+        return new DefaultWsClient();
     }
 
 
@@ -47,7 +52,9 @@ public class TestLive {
     public static String getWssUrl(DanmuInfoResult.DanmuInfo info) {
         DanmuInfoResult.Host host = info.getHost_list().get(0);
         // return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
-        return "wss://" + host.getHost() + "/sub";
+        // return "wss://" + host.getHost() + "/sub";
+        // return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
+        return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
     }
 
     @RequiredArgsConstructor

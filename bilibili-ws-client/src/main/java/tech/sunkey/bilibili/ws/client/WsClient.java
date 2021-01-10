@@ -1,14 +1,12 @@
 package tech.sunkey.bilibili.ws.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
@@ -18,8 +16,10 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
+import tech.sunkey.bilibili.ws.utils.Protocol;
 
 import java.net.URI;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Sunkey
@@ -30,6 +30,7 @@ import java.net.URI;
 public class WsClient {
 
     protected Channel channel;
+    private boolean heartbeat = false;
 
     protected DefaultHttpHeaders createHttpHeaders(Config config) {
         return new DefaultHttpHeaders();
@@ -45,13 +46,16 @@ public class WsClient {
 
     protected void initChannel(SocketChannel channel, Config config) {
         WebSocketClientHandshaker handshaker = createHandShaker(config);
-        channel.pipeline()
-                .addLast(new HttpClientCodec())
-                .addLast(new LoggingHandler(config.getLogLevel()))
-                .addLast(new BiliWsCodec())
-                .addLast(new HandlerImpl(handshaker, config.getHandler()));
+        ChannelPipeline pipeline = channel.pipeline();
+        pipeline.addLast(new HttpClientCodec());
+        if (config.getLogLevel() != null) {
+            pipeline.addLast(new LoggingHandler(config.getLogLevel()));
+        }
+        pipeline.addLast(new BiliWsCodec());
+        pipeline.addLast(new HandlerImpl(handshaker, config.getHandler()));
     }
 
+    @SneakyThrows
     public void connect(Config config) {
         log.info("Prepare connect : {}", config.getUrl());
         this.channel = new Bootstrap().group(new NioEventLoopGroup())
@@ -66,6 +70,18 @@ public class WsClient {
                 .addListener(a -> {
                     log.info("connect {} success.", config.getUrl());
                 }).channel();
+        channel.closeFuture().sync();
+    }
+
+    public synchronized void startHeartBeatTask() {
+        if (heartbeat) {
+            return;
+        }
+        heartbeat = true;
+
+        channel.eventLoop().scheduleAtFixedRate(() -> {
+            send(Protocol.heartBeat());
+        }, 0, 30, TimeUnit.SECONDS);
     }
 
     public synchronized void send(BiliWsPackage message) {
@@ -76,7 +92,7 @@ public class WsClient {
     }
 
     @RequiredArgsConstructor
-    class HandlerImpl extends SimpleChannelInboundHandler<BiliWsPackage> {
+    class HandlerImpl extends SimpleChannelInboundHandler<Object> {
 
         @NonNull
         private final WebSocketClientHandshaker handshaker;
@@ -86,12 +102,22 @@ public class WsClient {
         @Override
         public void channelActive(ChannelHandlerContext ctx) {
             handshaker.handshake(ctx.channel());
-            handler.connected(WsClient.this);
         }
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, BiliWsPackage message) {
-            handler.message(WsClient.this, message);
+        protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
+            if (msg instanceof DefaultHttpResponse) {
+                if (((DefaultHttpResponse) msg).status().code() == 101) {
+                    channel.eventLoop().schedule(() -> {
+                        handler.connected(WsClient.this);
+                    }, 2, TimeUnit.SECONDS);
+                }
+            } else if (msg instanceof BiliWsPackage) {
+                handler.message(WsClient.this, ((BiliWsPackage) msg));
+            } else {
+                log.info("recv unknown : {}", msg);
+            }
+
         }
 
         @Override
@@ -111,7 +137,7 @@ public class WsClient {
         private int port;
         private URI uri;
         @Getter
-        private LogLevel logLevel = LogLevel.INFO;
+        private LogLevel logLevel;
 
         public Config logLevel(LogLevel logLevel) {
             this.logLevel = logLevel;
