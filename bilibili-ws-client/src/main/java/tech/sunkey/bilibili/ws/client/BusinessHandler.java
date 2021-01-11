@@ -71,19 +71,19 @@ public class BusinessHandler extends SimpleChannelInboundHandler<Object> {
     }
 
     protected void handleMessage(BiliWsPackage pkg) {
-        log.info("[WebSocket] Recv Message: {}", pkg);
         switch (Operation.valueOf(pkg.getOperation())) {
             case Message:
                 handler.message(client, pkg);
                 break;
             case ConnectSuccess:
+                log.info("[WebSocket] Auth Passed.");
                 client.startHeartBeatTask(0);
-                break;
-            case HeartBeatReply:
                 handler.connected(client);
                 break;
+            case HeartBeatReply:
+                break;
             default:
-                log.info("[WebSocket] not handler for opcode={}", pkg.getOperation());
+                log.info("[WebSocket] MessageNoHandler: {}", pkg);
         }
     }
 

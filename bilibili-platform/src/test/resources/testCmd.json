@@ -1,0 +1,37 @@
+{
+  "cmd": "INTERACT_WORD",
+  "data": {
+    "uid": 84133711,
+    "uname": "FUN老仙儿",
+    "uname_color": "",
+    "identities": [
+      1
+    ],
+    "msg_type": 1,
+    "roomid": 21463235,
+    "timestamp": 1610347061,
+    "score": 1610347061145,
+    "fans_medal": {
+      "target_id": 7022616,
+      "medal_level": 1,
+      "medal_name": "矿蛙",
+      "medal_color": 12632256,
+      "medal_color_start": 12632256,
+      "medal_color_end": 12632256,
+      "medal_color_border": 12632256,
+      "is_lighted": 0,
+      "guard_level": 0,
+      "special": "",
+      "icon_id": 0,
+      "anchor_roomid": 930307,
+      "score": 99
+    },
+    "is_spread": 0,
+    "spread_info": "",
+    "contribution": {
+      "grade": 0
+    },
+    "spread_desc": "",
+    "tail_icon": 0
+  }
+}
