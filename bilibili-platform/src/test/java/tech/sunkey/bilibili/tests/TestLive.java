@@ -34,7 +34,7 @@ public class TestLive {
         log.info("UserAuth: {}", JSON.toJSONString(userAuth));
         client().connect(new WsClient.Config()
                 .url(getWssUrl(danmuInfo.getData()))
-                //.logLevel(LogLevel.INFO)
+                .logLevel(LogLevel.INFO)
                 .handler(new HandlerImpl(userAuth)));
     }
 
@@ -64,18 +64,28 @@ public class TestLive {
 
         @Override
         public void connected(WsClient client) {
-            System.out.println("Connected. Send UserAuth...");
+            System.out.println("Connected.");
+        }
+
+        @Override
+        public void wsprepared(WsClient client) {
+            log.info("LastHttpContent. Send UserAuth...");
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ex) {
+            }
             client.send(Protocol.userAuth(userAuth));
+            client.startHeartBeatTask(2);
         }
 
         @Override
         public void message(WsClient client, BiliWsPackage message) {
-            System.out.println("Recv Message:" + message);
+            log.info("Recv Message:" + message);
         }
 
         @Override
         public void disconnected(WsClient client) {
-            System.out.println("Disconnected.");
+            log.info("Disconnected.");
         }
     }
 

@@ -14,7 +14,8 @@ public class BiliBinaryDataTests {
 
 
     public static void main(String[] args) {
-        String s1 = "AAABDwAQAAEAAAAHAAAAAXsidWlkIjoyNDA4NDExNjYsInJvb21pZCI6NzczNDIwMCwicHJvdG92ZXIiOjIsInBsYXRmb3JtIjoid2ViIiwiY2xpZW50dmVyIjoiMi41LjExIiwidHlwZSI6Miwia2V5IjoicnlrMFRXb3lfdXBPLVZpUzVzaHZOVXBOZ2czWkxuWFV0eXd5dWFkUGZiWXJOSXc1YUJ0Q2hRc2Q1eXB2U1k4ZzQyeXliM2V5NDR4ZGR1a2dYdEJOQV9NT0ZLci1ERjE0STNlS3JkSWR2Z1ZQaVlPWkZNWWtxRjRoTjJqVllRb1ZEOTI3eXhXOWtlZDlKdW5QVmhremxGRT0ifQ==";
+
+        String s1 = "AAABDwAQAAEAAAAHAAAAAXsidWlkIjoyNDA4NDExNjYsInJvb21pZCI6NzczNDIwMCwicHJvdG92ZXIiOjIsInBsYXRmb3JtIjoid2ViIiwiY2xpZW50dmVyIjoiMi41LjExIiwidHlwZSI6Miwia2V5IjoicEEtRUpNaGJycTJYTTdLVHE4YnVkUkRsRmhZRmJqREszWGpTQWJBTUlkZVVfRXA5dTljQm1TVkc5eW9fNzd6ZEpEcXNFUzdoQUpHLWxFS2V4cTdCWnFkNVI0WEJJM1M3R2VqWTRJWUtZb0RjTk0xQnBBNnZyRE9JMlpnZlIyX19jdUdVaUJwQXFfVFhvamo0LUI0b3R2azEifQ==";
         test("S1", s1);
         String r1 = "AAAAGgAQAAEAAAAIAAAAAXsiY29kZSI6MH0=";
         test("R1", r1);
@@ -23,6 +24,14 @@ public class BiliBinaryDataTests {
         String r2 = "AAAAFAAQAAEAAAADAAAAAQFbrps=";
         test("R2", r2);
     }
+
+    //{"clientver":"2.5.11",
+    // "key":"WhF2RBb8sF1zLwNJlROW7sIaYLaylYx91HO2MUNJ3Z5r8OUOsu0QetWx99nAqJCpzo6CYgow2fPlS2YblD3cI0N2BbHrfgCTlO0l05jhHYw2N_DNriM7NRoysr1TvaPAbDieHF5E5ba42wTLMxY=",
+    // "platform":"web",
+    // "protover":2,
+    // "roomid":7734200,
+    // "type":2,
+    // "uid":0}
 
     public static void test(String name, String base64) {
         System.out.println("Message : " + name);

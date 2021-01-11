@@ -5,9 +5,11 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.base64.Base64Decoder;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.LastHttpContent;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
@@ -51,14 +53,17 @@ public class WsClient {
         if (config.getLogLevel() != null) {
             pipeline.addLast(new LoggingHandler(config.getLogLevel()));
         }
-        pipeline.addLast(new BiliWsCodec());
+        pipeline.addLast(new Base64Decoder());
+        pipeline.addLast(new BiliWsDecoder());
+        pipeline.addLast(new BiliWsEncoder());
         pipeline.addLast(new HandlerImpl(handshaker, config.getHandler()));
     }
 
     @SneakyThrows
     public void connect(Config config) {
         log.info("Prepare connect : {}", config.getUrl());
-        this.channel = new Bootstrap().group(new NioEventLoopGroup())
+        NioEventLoopGroup group = new NioEventLoopGroup();
+        this.channel = new Bootstrap().group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
@@ -71,9 +76,10 @@ public class WsClient {
                     log.info("connect {} success.", config.getUrl());
                 }).channel();
         channel.closeFuture().sync();
+        group.shutdownGracefully();
     }
 
-    public synchronized void startHeartBeatTask() {
+    public synchronized void startHeartBeatTask(int initDelaySeconds) {
         if (heartbeat) {
             return;
         }
@@ -81,7 +87,7 @@ public class WsClient {
 
         channel.eventLoop().scheduleAtFixedRate(() -> {
             send(Protocol.heartBeat());
-        }, 0, 30, TimeUnit.SECONDS);
+        }, initDelaySeconds, 30, TimeUnit.SECONDS);
     }
 
     public synchronized void send(BiliWsPackage message) {
@@ -108,16 +114,15 @@ public class WsClient {
         protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
             if (msg instanceof DefaultHttpResponse) {
                 if (((DefaultHttpResponse) msg).status().code() == 101) {
-                    channel.eventLoop().schedule(() -> {
-                        handler.connected(WsClient.this);
-                    }, 2, TimeUnit.SECONDS);
+                    handler.connected(WsClient.this);
                 }
             } else if (msg instanceof BiliWsPackage) {
                 handler.message(WsClient.this, ((BiliWsPackage) msg));
+            } else if (msg instanceof LastHttpContent) {
+                handler.wsprepared(WsClient.this);
             } else {
-                log.info("recv unknown : {}", msg);
+                log.info("recv unknown[{}]:{}", msg.getClass(), msg);
             }
-
         }
 
         @Override

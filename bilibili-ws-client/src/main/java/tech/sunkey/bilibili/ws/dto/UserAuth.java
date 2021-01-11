@@ -24,9 +24,9 @@ public class UserAuth {
         UserAuth u = new UserAuth();
         u.uid = 0;
         u.roomid = roomid;
-        u.protover = 2;
+        u.protover = 1;
         u.platform = "web";
-        u.clientver = "2.6.0";
+        u.clientver = "2.5.11";
         u.type = 2;
         u.key = token;
         return u;

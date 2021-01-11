@@ -2,11 +2,14 @@ package tech.sunkey.bilibili.ws.utils;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 import tech.sunkey.bilibili.ws.dto.Constants;
 import tech.sunkey.bilibili.ws.dto.Operation;
 import tech.sunkey.bilibili.ws.dto.UserAuth;
 
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +17,7 @@ import java.util.List;
  * @author Sunkey
  * @since 2021-01-09 4:59 下午
  **/
+@Slf4j
 public class Protocol implements Constants {
 
     public static BiliWsPackage heartBeat() {
@@ -83,8 +87,9 @@ public class Protocol implements Constants {
         return JSON.toJSONString(data).getBytes();
     }
 
-    public static void write(BiliWsPackage pkg, ByteBuf bb) {
+    public static byte[] serialize(BiliWsPackage pkg) {
         byte[] data = processPackage(pkg);
+        ByteBuf bb = Unpooled.buffer(pkg.getPackageLength());
         bb.writeInt(pkg.getPackageLength());
         bb.writeShort(pkg.getHeaderLength());
         bb.writeShort(pkg.getVersion());
@@ -93,6 +98,13 @@ public class Protocol implements Constants {
         if (data != null) {
             bb.writeBytes(data);
         }
+        byte[] arr = bb.array();
+        bb.release();
+        return arr;
+    }
+
+    public static void write(BiliWsPackage pkg, ByteBuf bb) {
+        bb.writeBytes(serialize(pkg));
     }
 
     private static BiliWsPackage parse(int offset, DataView buffer) {
