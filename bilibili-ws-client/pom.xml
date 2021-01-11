@@ -37,10 +37,11 @@
             <artifactId>common-utils</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-example</artifactId>
-        </dependency>
+            <scope>test</scope>
+        </dependency>-->
     </dependencies>
 
 </project>

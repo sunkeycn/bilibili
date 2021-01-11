@@ -34,8 +34,9 @@ public class Config {
         return new Config(client);
     }
 
-    public Channel connect() {
-        return client.connect(this);
+    public WsClient connect() {
+        client.connect(this);
+        return client;
     }
 
     private Config(WsClient client) {

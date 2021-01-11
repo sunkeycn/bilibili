@@ -13,10 +13,20 @@ import tech.sunkey.bilibili.ws.dto.event.NoticeMsg;
 @RequiredArgsConstructor
 public enum EventType {
 
+    Unknown(null),
+
     INTERACT_WORD(InteractWord.class),
     NOTICE_MSG(NoticeMsg.class),
     ;
 
     private final Class<?> type;
+
+    public static EventType forName(String cmd) {
+        try {
+            return EventType.valueOf(cmd);
+        } catch (Exception ex) {
+            return Unknown;
+        }
+    }
 
 }

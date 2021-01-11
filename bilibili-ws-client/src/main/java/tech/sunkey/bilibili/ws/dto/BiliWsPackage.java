@@ -21,7 +21,6 @@ public class BiliWsPackage {
     private int sequence;
     private Object data;
 
-
     public BiliWsPackage flip() {
         BiliWsPackage flip = new BiliWsPackage();
         flip.headerLength = 16;
