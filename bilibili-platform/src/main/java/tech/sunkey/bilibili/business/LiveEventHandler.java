@@ -18,8 +18,8 @@ import tech.sunkey.bilibili.ws.event.EventType;
 public class LiveEventHandler extends EventHandler {
 
     @Event(EventType.Unknown)
-    public void handleEvent(EventType type, Object data) {
-        log.info("HandleEvent[{}]=>{}", type, data);
+    public void handleEvent(JSONObject data) {
+        log.info("HandleEvent=>{}", data);
     }
 
     @Event(EventType.INTERACT_WORD)
