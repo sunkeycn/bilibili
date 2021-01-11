@@ -1,0 +1,36 @@
+{
+  "data": {
+    "uname": "冬瓜果冻",
+    "gift_id": 30607,
+    "batch_combo_id": "batch:gift:combo_id:27197325:6639802:30607:1610352874.9820",
+    "combo_total_coin": 0,
+    "ruid": 6639802,
+    "combo_id": "gift:combo_id:27197325:6639802:30607:1610352865.9277",
+    "is_show": 1,
+    "uid": 27197325,
+    "combo_num": 40,
+    "gift_num": 0,
+    "r_uname": "陈哥1",
+    "total_num": 40,
+    "batch_combo_num": 40,
+    "medal_info": {
+      "medal_name": "萌陈",
+      "anchor_uname": "",
+      "medal_color_border": 12478086,
+      "medal_color_end": 12478086,
+      "target_id": 6639802,
+      "icon_id": 0,
+      "special": "",
+      "medal_color": 12478086,
+      "medal_color_start": 12478086,
+      "is_lighted": 1,
+      "medal_level": 15,
+      "anchor_roomid": 0,
+      "guard_level": 0
+    },
+    "action": "投喂",
+    "gift_name": "小心心",
+    "name_color": ""
+  },
+  "cmd": "COMBO_SEND"
+}

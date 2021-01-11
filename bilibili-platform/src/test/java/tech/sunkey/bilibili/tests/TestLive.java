@@ -12,7 +12,7 @@ import tech.sunkey.bilibili.business.LiveBusiness;
 public class TestLive {
 
     public static void main(String[] args) {
-        new LiveBusiness().connectRoom(21463235);
+        new LiveBusiness().connectRoom(404);
     }
 
 }

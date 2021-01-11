@@ -30,7 +30,10 @@ public abstract class EventHandler implements ClientHandler {
         for (Method method : getClass().getMethods()) {
             Event ann = method.getAnnotation(Event.class);
             if (ann != null) {
-                if (!method.isAccessible() || method.getParameterCount() != 1) {
+                if (!method.isAccessible()) {
+                    method.setAccessible(true);
+                }
+                if (method.getParameterCount() != 1) {
                     throw new IllegalStateException("@Event not support!");
                 }
                 Class<?> paramType = method.getParameterTypes()[0];

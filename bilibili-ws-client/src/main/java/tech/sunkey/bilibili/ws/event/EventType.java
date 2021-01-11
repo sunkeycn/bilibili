@@ -2,8 +2,7 @@ package tech.sunkey.bilibili.ws.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import tech.sunkey.bilibili.ws.dto.event.InteractWord;
-import tech.sunkey.bilibili.ws.dto.event.NoticeMsg;
+import tech.sunkey.bilibili.ws.dto.event.*;
 
 /**
  * @author Sunkey
@@ -14,9 +13,15 @@ import tech.sunkey.bilibili.ws.dto.event.NoticeMsg;
 public enum EventType {
 
     Unknown(null),
-
     INTERACT_WORD(InteractWord.class),
     NOTICE_MSG(NoticeMsg.class),
+    DANMU_MSG(DanmuMsg.class),
+    WIDGET_BANNER(WidgetBanner.class),
+    COMBO_SEND(ComboSend.class),
+    ONLINE_RANK_COUNT(OnlineRankCount.class),
+    ENTRY_EFFECT(EntryEffect.class),
+    SEND_GIFT(SendGift.class),
+    ROOM_REAL_TIME_MESSAGE_UPDATE(RoomRealTimeMessageUpdate.class),
     ;
 
     private final Class<?> type;

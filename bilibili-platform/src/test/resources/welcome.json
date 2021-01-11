@@ -1,0 +1,28 @@
+{
+  "data": {
+    "copy_writing": "欢迎舰长 <%擅长关心人的高...%> 进入直播间",
+    "effective_time": 2,
+    "privilege_type": 3,
+    "basemap_url": "https://i0.hdslb.com/bfs/live/mlive/f34c7441cdbad86f76edebf74e60b59d2958f6ad.png",
+    "business": 1,
+    "mock_effect": 0,
+    "highlight_color": "#E6FF00",
+    "target_id": 6639802,
+    "copy_writing_v2": "欢迎 <^icon^> 舰长 <%擅长关心人的…%> 进入直播间",
+    "max_delay_time": 7,
+    "priority": 1,
+    "web_effective_time": 0,
+    "uid": 7888161,
+    "face": "https://i0.hdslb.com/bfs/face/6bd95de74fb7c3b40d780b931a17a710dd3eaa67.jpg",
+    "web_effect_close": 0,
+    "copy_color": "#ffffff",
+    "web_close_time": 0,
+    "show_avatar": 1,
+    "icon_list": [
+      1
+    ],
+    "id": 4,
+    "web_basemap_url": ""
+  },
+  "cmd": "ENTRY_EFFECT"
+}

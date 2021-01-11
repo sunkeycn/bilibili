@@ -1,0 +1,9 @@
+{
+  "data": {
+    "red_notice": -1,
+    "roomid": 12265,
+    "fans": 280946,
+    "fans_club": 7003
+  },
+  "cmd": "ROOM_REAL_TIME_MESSAGE_UPDATE"
+}

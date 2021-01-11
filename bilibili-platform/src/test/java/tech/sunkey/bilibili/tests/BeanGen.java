@@ -10,7 +10,8 @@ import com.onway.common.utils.dev.JsonBean;
 public class BeanGen {
 
     public static void main(String[] args) {
-        String gen = new JsonBean().generate("NoticeMsg", FileUtils.from("classpath:notice_msg.json").readToString());
+        String gen = new JsonBean().generate("RoomRealTimeMessageUpdate",
+                FileUtils.from("classpath:new.json").readToString());
         System.out.println(gen);
     }
 
