@@ -39,7 +39,7 @@ public class LiveEventHandler extends EventHandler {
 
     @Event(EventType.DANMU_MSG)
     public void handleDanmuMsg(DanmuMsg data) {
-        log.info("DanmuMsg=>{}", data);
+        // log.info("DanmuMsg=>{}", data);
         log.info("弹幕:{}", BilibiliUtils.convert(data));
     }
 

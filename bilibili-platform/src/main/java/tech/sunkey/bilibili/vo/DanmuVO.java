@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author Sunkey
  * @since 2021-01-11 4:38 下午
@@ -16,6 +18,6 @@ public class DanmuVO {
     private String msg;
     private int uid;
     private String uname;
-    private int timestamp;
+    private Date time;
 
 }
