@@ -3,7 +3,6 @@ package tech.sunkey.bilibili.business;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.utils.BilibiliUtils;
-import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 import tech.sunkey.bilibili.ws.dto.event.*;
 import tech.sunkey.bilibili.ws.event.Event;
 import tech.sunkey.bilibili.ws.event.EventHandler;
@@ -66,6 +65,11 @@ public class LiveEventHandler extends EventHandler {
     @Event(EventType.ROOM_REAL_TIME_MESSAGE_UPDATE)
     public void handleRoomRealTimeMessageUpdate(RoomRealTimeMessageUpdate data) {
         // log.info("RoomRealTimeMessageUpdate=>{}", data);
+    }
+
+    @Event(EventType.ROOM_RANK)
+    public void handleRoomRank(RoomRank data) {
+        // log.info("RoomRank=>{}", data);
     }
 
 }

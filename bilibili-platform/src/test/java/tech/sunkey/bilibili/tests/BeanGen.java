@@ -10,8 +10,8 @@ import com.onway.common.utils.dev.JsonBean;
 public class BeanGen {
 
     public static void main(String[] args) {
-        String gen = new JsonBean().generate("RoomRealTimeMessageUpdate",
-                FileUtils.from("classpath:new.json").readToString());
+        String gen = new JsonBean().generate("RoomRank",
+                FileUtils.from("classpath:roomRank.json").readToString());
         System.out.println(gen);
     }
 

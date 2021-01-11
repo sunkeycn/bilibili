@@ -22,6 +22,7 @@ public enum EventType {
     ENTRY_EFFECT(EntryEffect.class),
     SEND_GIFT(SendGift.class),
     ROOM_REAL_TIME_MESSAGE_UPDATE(RoomRealTimeMessageUpdate.class),
+    ROOM_RANK(RoomRank.class),
     ;
 
     private final Class<?> type;
