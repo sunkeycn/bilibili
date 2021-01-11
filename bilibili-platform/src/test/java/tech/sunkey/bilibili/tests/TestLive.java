@@ -11,6 +11,7 @@ import tech.sunkey.bilibili.ws.client.ClientHandler;
 import tech.sunkey.bilibili.ws.client.DefaultWsClient;
 import tech.sunkey.bilibili.ws.client.WsClient;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
+import tech.sunkey.bilibili.ws.dto.Operation;
 import tech.sunkey.bilibili.ws.dto.UserAuth;
 import tech.sunkey.bilibili.ws.utils.Protocol;
 
@@ -24,13 +25,16 @@ public class TestLive {
 
     public static void main(String[] args) {
         LiveAPI api = new LiveAPI();
-        RoomInitResult roomInfo = api.roomInit(6);
+        RoomInitResult roomInfo = api.roomInit(21463235);
         System.out.println(roomInfo);
         Integer roomId = roomInfo.getData().getRoom_id();
         System.out.println("RoomId=" + roomId);
         DanmuInfoResult danmuInfo = api.getDanmuInfo(roomId);
         System.out.println(danmuInfo);
-        UserAuth userAuth = UserAuth.userAuth(roomId, danmuInfo.getData().getToken());
+        UserAuth userAuth = UserAuth.userAuth(0, roomId, danmuInfo.getData().getToken());
+        //int uid = 240841166;
+        //String token = "SfZtSBoJ3gpJors5_slxILRXNDTsrRa5JKIK8Mkz28NvaU4INPkZMmaSrGx8UWAaRPn-U_asv-fd6MrYt5XRaK9rF_fH8lJmJfLwgDr55rBuVF6VS1nfs2VC5JC_bI-9th7iWXtIcKuB3MSe4JZD35Jr";
+        //UserAuth userAuth = UserAuth.userAuth(uid, roomId, token);
         log.info("UserAuth: {}", JSON.toJSONString(userAuth));
         client().connect(new WsClient.Config()
                 .url(getWssUrl(danmuInfo.getData()))
@@ -54,7 +58,7 @@ public class TestLive {
         // return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
         // return "wss://" + host.getHost() + "/sub";
         // return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
-        return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
+        return "ws://" + host.getHost() + ":" + host.getPort() + "/sub";
     }
 
     @RequiredArgsConstructor
@@ -64,28 +68,30 @@ public class TestLive {
 
         @Override
         public void connected(WsClient client) {
-            System.out.println("Connected.");
-        }
-
-        @Override
-        public void wsprepared(WsClient client) {
-            log.info("LastHttpContent. Send UserAuth...");
-            try {
-                Thread.sleep(1000);
-            } catch (Exception ex) {
-            }
-            client.send(Protocol.userAuth(userAuth));
-            client.startHeartBeatTask(2);
+            log.info("[WebSocket] Connected.");
+            client.delay(() -> {
+                log.info("[WebSocket] Send UserAuth.");
+                client.send(Protocol.userAuth(userAuth).flip());
+            }, 2);
         }
 
         @Override
         public void message(WsClient client, BiliWsPackage message) {
-            log.info("Recv Message:" + message);
+            log.info("[WebSocket] Recv Message: {}", message);
+
+            switch (Operation.valueOf(message.getOperation())) {
+                case ConnectSuccess:
+                    client.startHeartBeatTask(0);
+                    break;
+
+                default:
+                    log.info("[WebSocket] not handler for opcode={}", message.getOperation());
+            }
         }
 
         @Override
         public void disconnected(WsClient client) {
-            log.info("Disconnected.");
+            log.info("[WebSocket] Disconnected.");
         }
     }
 

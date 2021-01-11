@@ -15,7 +15,7 @@ public class ProtocolSerialTests {
 
 
     public static void main(String[] args) {
-        UserAuth ua = UserAuth.userAuth(7734200, "gwouhHih6nCVvSL_clJ7p1F4HR8VL28TNfoIZp9sCyUa2UyhhUaQiVvdczU43keHtHfdBHwsCy9npFx_Fil6wyzwc3PXyZQ8rHEYYpXhnW3iZpV6LJCtqAHuvhI37Tafd5X8jt6fNaZpn1jLmw==");
+        UserAuth ua = UserAuth.userAuth(0, 7734200, "gwouhHih6nCVvSL_clJ7p1F4HR8VL28TNfoIZp9sCyUa2UyhhUaQiVvdczU43keHtHfdBHwsCy9npFx_Fil6wyzwc3PXyZQ8rHEYYpXhnW3iZpV6LJCtqAHuvhI37Tafd5X8jt6fNaZpn1jLmw==");
         BiliWsPackage pkg = Protocol.userAuth(ua);
         System.out.println(pkg);
         String b64 = DataView.of(Protocol.serialize(pkg)).base64();

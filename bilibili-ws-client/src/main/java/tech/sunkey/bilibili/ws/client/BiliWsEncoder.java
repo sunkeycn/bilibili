@@ -8,11 +8,13 @@ import tech.sunkey.bilibili.ws.utils.Protocol;
 
 /**
  * @author Sunkey
- * @since 2021-01-10 10:47 下午
+ * @since 2021-01-11 1:40 下午
  **/
 public class BiliWsEncoder extends MessageToByteEncoder<BiliWsPackage> {
+
     @Override
     protected void encode(ChannelHandlerContext ctx, BiliWsPackage msg, ByteBuf out) throws Exception {
-        out.writeBytes(Protocol.serialize(msg));
+        Protocol.write(msg, out);
     }
+
 }

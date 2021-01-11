@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum Operation {
 
+    Unknown(-1),
     HeartBeat(Constants.WS_OP_HEARTBEAT),
     HeartBeatReply(Constants.WS_OP_HEARTBEAT_REPLY),
     Message(Constants.WS_OP_MESSAGE),
@@ -19,4 +20,15 @@ public enum Operation {
 
     ;
     private final int code;
+
+    public static Operation valueOf(int opcode) {
+        for (Operation value : values()) {
+            if (value.code == opcode) {
+                return value;
+            }
+        }
+
+        return Unknown;
+    }
+
 }

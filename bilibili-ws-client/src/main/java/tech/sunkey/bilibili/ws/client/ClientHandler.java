@@ -10,8 +10,6 @@ public interface ClientHandler {
 
     void connected(WsClient client);
 
-    void wsprepared(WsClient client);
-
     void message(WsClient client, BiliWsPackage message);
 
     void disconnected(WsClient client);

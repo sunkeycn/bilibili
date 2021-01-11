@@ -6,20 +6,19 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.base64.Base64Decoder;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.codec.http.LastHttpContent;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
-import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.websocketx.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.util.concurrent.ScheduledFuture;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 import tech.sunkey.bilibili.ws.utils.Protocol;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
 import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
@@ -46,21 +45,27 @@ public class WsClient {
                 createHttpHeaders(config));
     }
 
-    protected void initChannel(SocketChannel channel, Config config) {
+    public Channel channel() {
+        return channel;
+    }
+
+    protected void initChannel(SocketChannel channel, Config config) throws Exception {
         WebSocketClientHandshaker handshaker = createHandShaker(config);
         ChannelPipeline pipeline = channel.pipeline();
+        SSLEngine sslEngine = SSLContext.getDefault().createSSLEngine();
+        sslEngine.setUseClientMode(true);
+        pipeline.addLast(new SslHandler(sslEngine));
         pipeline.addLast(new HttpClientCodec());
         if (config.getLogLevel() != null) {
             pipeline.addLast(new LoggingHandler(config.getLogLevel()));
         }
-        pipeline.addLast(new Base64Decoder());
-        pipeline.addLast(new BiliWsDecoder());
+        pipeline.addLast(new HttpObjectAggregator(8192));
         pipeline.addLast(new BiliWsEncoder());
-        pipeline.addLast(new HandlerImpl(handshaker, config.getHandler()));
+        pipeline.addLast(new BusinessHandler(this, handshaker, config.getHandler()));
     }
 
     @SneakyThrows
-    public void connect(Config config) {
+    public Channel connect(Config config) {
         log.info("Prepare connect : {}", config.getUrl());
         NioEventLoopGroup group = new NioEventLoopGroup();
         this.channel = new Bootstrap().group(group)
@@ -75,8 +80,18 @@ public class WsClient {
                 .addListener(a -> {
                     log.info("connect {} success.", config.getUrl());
                 }).channel();
-        channel.closeFuture().sync();
-        group.shutdownGracefully();
+        channel.closeFuture().addListener(a -> {
+            group.shutdownGracefully();
+        });
+        return channel;
+    }
+
+    public ScheduledFuture delay(Runnable task, int delaySec) {
+        return channel.eventLoop().schedule(task, delaySec, TimeUnit.SECONDS);
+    }
+
+    public ScheduledFuture schedule(Runnable task, int delaySec, int periodSec) {
+        return channel.eventLoop().scheduleAtFixedRate(task, delaySec, periodSec, TimeUnit.SECONDS);
     }
 
     public synchronized void startHeartBeatTask(int initDelaySeconds) {
@@ -85,9 +100,7 @@ public class WsClient {
         }
         heartbeat = true;
 
-        channel.eventLoop().scheduleAtFixedRate(() -> {
-            send(Protocol.heartBeat());
-        }, initDelaySeconds, 30, TimeUnit.SECONDS);
+        schedule(() -> send(Protocol.heartBeat().flip()), initDelaySeconds, 30);
     }
 
     public synchronized void send(BiliWsPackage message) {
@@ -95,40 +108,6 @@ public class WsClient {
             throw new IllegalStateException();
         }
         channel.writeAndFlush(message);
-    }
-
-    @RequiredArgsConstructor
-    class HandlerImpl extends SimpleChannelInboundHandler<Object> {
-
-        @NonNull
-        private final WebSocketClientHandshaker handshaker;
-        @NonNull
-        private final ClientHandler handler;
-
-        @Override
-        public void channelActive(ChannelHandlerContext ctx) {
-            handshaker.handshake(ctx.channel());
-        }
-
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
-            if (msg instanceof DefaultHttpResponse) {
-                if (((DefaultHttpResponse) msg).status().code() == 101) {
-                    handler.connected(WsClient.this);
-                }
-            } else if (msg instanceof BiliWsPackage) {
-                handler.message(WsClient.this, ((BiliWsPackage) msg));
-            } else if (msg instanceof LastHttpContent) {
-                handler.wsprepared(WsClient.this);
-            } else {
-                log.info("recv unknown[{}]:{}", msg.getClass(), msg);
-            }
-        }
-
-        @Override
-        public void channelUnregistered(ChannelHandlerContext ctx) {
-            handler.disconnected(WsClient.this);
-        }
     }
 
     @ToString

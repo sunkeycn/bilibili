@@ -30,8 +30,6 @@ public class Protocol implements Constants {
 
     public static BiliWsPackage newPackage(Operation operation, Object data) {
         BiliWsPackage pkg = new BiliWsPackage();
-        pkg.setVersion(1);
-        pkg.setSequence(1);
         pkg.setOperation(operation.getCode());
         pkg.setData(data);
         return pkg;
@@ -63,48 +61,26 @@ public class Protocol implements Constants {
         }
     }
 
-    private static byte[] processPackage(BiliWsPackage pkg) {
-        pkg.setHeaderLength(16);
-        pkg.setVersion(1);
-        pkg.setSequence(1);
-        int len = pkg.getHeaderLength();
-        byte[] data = null;
-        if (pkg.getData() != null) {
-            data = getDataAsBytes(pkg.getData());
-            len += data.length;
-        }
-        pkg.setPackageLength(len);
-        return data;
-    }
-
-    private static byte[] getDataAsBytes(Object data) {
-        if (data == null) {
-            return new byte[0];
-        }
-        if (data instanceof String) {
-            return ((String) data).getBytes();
-        }
-        return JSON.toJSONString(data).getBytes();
-    }
-
     public static byte[] serialize(BiliWsPackage pkg) {
-        byte[] data = processPackage(pkg);
         ByteBuf bb = Unpooled.buffer(pkg.getPackageLength());
         bb.writeInt(pkg.getPackageLength());
         bb.writeShort(pkg.getHeaderLength());
         bb.writeShort(pkg.getVersion());
         bb.writeInt(pkg.getOperation());
         bb.writeInt(pkg.getSequence());
-        if (data != null) {
-            bb.writeBytes(data);
-        }
+        bb.writeBytes((byte[]) pkg.getData());
         byte[] arr = bb.array();
         bb.release();
         return arr;
     }
 
     public static void write(BiliWsPackage pkg, ByteBuf bb) {
-        bb.writeBytes(serialize(pkg));
+        bb.writeInt(pkg.getPackageLength());
+        bb.writeShort(pkg.getHeaderLength());
+        bb.writeShort(pkg.getVersion());
+        bb.writeInt(pkg.getOperation());
+        bb.writeInt(pkg.getSequence());
+        bb.writeBytes((byte[]) pkg.getData());
     }
 
     private static BiliWsPackage parse(int offset, DataView buffer) {
