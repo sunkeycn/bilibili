@@ -58,7 +58,7 @@ public class TestLive {
         // return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
         // return "wss://" + host.getHost() + "/sub";
         // return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
-        return "ws://" + host.getHost() + ":" + host.getPort() + "/sub";
+        return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
     }
 
     @RequiredArgsConstructor

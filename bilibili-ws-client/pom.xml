@@ -37,6 +37,10 @@
             <artifactId>common-utils</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-example</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

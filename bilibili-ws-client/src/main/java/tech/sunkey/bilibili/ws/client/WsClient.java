@@ -8,9 +8,13 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.base64.Base64Decoder;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.ScheduledFuture;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,12 @@ public class WsClient {
 
     protected Channel channel;
     private boolean heartbeat = false;
+    private final SslContext sslCtx = buildSslContext();
+
+    @SneakyThrows
+    private SslContext buildSslContext() {
+        return SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+    }
 
     protected DefaultHttpHeaders createHttpHeaders(Config config) {
         return new DefaultHttpHeaders();
@@ -52,14 +62,13 @@ public class WsClient {
     protected void initChannel(SocketChannel channel, Config config) throws Exception {
         WebSocketClientHandshaker handshaker = createHandShaker(config);
         ChannelPipeline pipeline = channel.pipeline();
-        SSLEngine sslEngine = SSLContext.getDefault().createSSLEngine();
-        sslEngine.setUseClientMode(true);
-        pipeline.addLast(new SslHandler(sslEngine));
+        pipeline.addLast(sslCtx.newHandler(channel.alloc()));
         pipeline.addLast(new HttpClientCodec());
         if (config.getLogLevel() != null) {
             pipeline.addLast(new LoggingHandler(config.getLogLevel()));
         }
         pipeline.addLast(new HttpObjectAggregator(8192));
+        pipeline.addLast(WebSocketClientCompressionHandler.INSTANCE);
         pipeline.addLast(new BiliWsEncoder());
         pipeline.addLast(new BusinessHandler(this, handshaker, config.getHandler()));
     }
