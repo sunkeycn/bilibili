@@ -72,4 +72,15 @@ public class LiveEventHandler extends EventHandler {
         // log.info("RoomRank=>{}", data);
     }
 
+    @Event(EventType.ONLINE_RANK_V2)
+    public void handleOnlineRankV2(OnlineRankV2 data) {
+        // log.info("OnlineRankV2=>{}", data);
+    }
+
+    @Event(EventType.HOT_RANK_CHANGED)
+    public void handleHotRankChanged(HotRankChanged data) {
+        // log.info("HotRankChanged=>{}", data);
+    }
+
+
 }

@@ -23,6 +23,8 @@ public enum EventType {
     SEND_GIFT(SendGift.class),
     ROOM_REAL_TIME_MESSAGE_UPDATE(RoomRealTimeMessageUpdate.class),
     ROOM_RANK(RoomRank.class),
+    ONLINE_RANK_V2(OnlineRankV2.class),
+    HOT_RANK_CHANGED(HotRankChanged.class),
     ;
 
     private final Class<?> type;
