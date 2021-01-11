@@ -1,29 +1,31 @@
 package tech.sunkey.bilibili.ws.client;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.base64.Base64Decoder;
-import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.websocketx.*;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketClientCompressionHandler;
-import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.ScheduledFuture;
-import lombok.*;
+import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
 import tech.sunkey.bilibili.ws.utils.Protocol;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -37,6 +39,8 @@ public class WsClient {
     protected Channel channel;
     private boolean heartbeat = false;
     private final SslContext sslCtx = buildSslContext();
+    @Getter
+    private Config config;
 
     @SneakyThrows
     private SslContext buildSslContext() {
@@ -59,7 +63,7 @@ public class WsClient {
         return channel;
     }
 
-    protected void initChannel(SocketChannel channel, Config config) throws Exception {
+    protected void initChannel(SocketChannel channel, Config config, ClientHandler handler) {
         WebSocketClientHandshaker handshaker = createHandShaker(config);
         ChannelPipeline pipeline = channel.pipeline();
         pipeline.addLast(sslCtx.newHandler(channel.alloc()));
@@ -70,19 +74,20 @@ public class WsClient {
         pipeline.addLast(new HttpObjectAggregator(8192));
         pipeline.addLast(WebSocketClientCompressionHandler.INSTANCE);
         pipeline.addLast(new BiliWsEncoder());
-        pipeline.addLast(new BusinessHandler(this, handshaker, config.getHandler()));
+        pipeline.addLast(new BusinessHandler(this, handshaker, handler));
     }
 
     @SneakyThrows
     public Channel connect(Config config) {
         log.info("Prepare connect : {}", config.getUrl());
+        this.config = config;
         NioEventLoopGroup group = new NioEventLoopGroup();
         this.channel = new Bootstrap().group(group)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
-                        WsClient.this.initChannel(channel, config);
+                        WsClient.this.initChannel(channel, config, config.getHandler());
                     }
                 })
                 .connect(config.getHost(), config.getPort())
@@ -112,85 +117,11 @@ public class WsClient {
         schedule(() -> send(Protocol.heartBeat().flip()), initDelaySeconds, 30);
     }
 
-    public synchronized void send(BiliWsPackage message) {
+    public synchronized ChannelFuture send(BiliWsPackage message) {
         if (this.channel == null) {
             throw new IllegalStateException();
         }
-        channel.writeAndFlush(message);
-    }
-
-    @ToString
-    public static class Config {
-
-        @Getter
-        private ClientHandler handler;
-        @Getter
-        private String url;
-        private String host;
-        private int port;
-        private URI uri;
-        @Getter
-        private LogLevel logLevel;
-
-        public Config logLevel(LogLevel logLevel) {
-            this.logLevel = logLevel;
-            return this;
-        }
-
-        public Config handler(ClientHandler handler) {
-            this.handler = handler;
-            return this;
-        }
-
-        public Config url(String url) {
-            this.url = url;
-            return this;
-        }
-
-        public Config host(String host) {
-            this.host = host;
-            return this;
-        }
-
-        public Config port(int port) {
-            this.port = port;
-            return this;
-        }
-
-        @SneakyThrows
-        public URI getURI() {
-            if (uri == null) {
-                uri = new URI(url);
-            }
-            return uri;
-        }
-
-        public String getHost() {
-            if (host == null) {
-                host = getURI().getHost();
-            }
-            return host;
-        }
-
-        public int getPort() {
-            if (port == 0) {
-                port = _getPort();
-            }
-            return port;
-        }
-
-        private int _getPort() {
-            URI uri = getURI();
-            int port = uri.getPort();
-            if (port == -1) {
-                if ("wss".equals(uri.getScheme()) || "https".equals(uri.getScheme())) {
-                    return 443;
-                }
-                return 80;
-            }
-            return port;
-        }
-
+        return channel.writeAndFlush(message);
     }
 
 }

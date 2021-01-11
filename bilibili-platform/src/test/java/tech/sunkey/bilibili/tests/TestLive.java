@@ -8,6 +8,7 @@ import tech.sunkey.bilibili.api.LiveAPI;
 import tech.sunkey.bilibili.api.dto.live.DanmuInfoResult;
 import tech.sunkey.bilibili.api.dto.live.RoomInitResult;
 import tech.sunkey.bilibili.ws.client.ClientHandler;
+import tech.sunkey.bilibili.ws.client.Config;
 import tech.sunkey.bilibili.ws.client.DefaultWsClient;
 import tech.sunkey.bilibili.ws.client.WsClient;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
@@ -32,61 +33,31 @@ public class TestLive {
         DanmuInfoResult danmuInfo = api.getDanmuInfo(roomId);
         System.out.println(danmuInfo);
         UserAuth userAuth = UserAuth.userAuth(0, roomId, danmuInfo.getData().getToken());
-        //int uid = 240841166;
-        //String token = "SfZtSBoJ3gpJors5_slxILRXNDTsrRa5JKIK8Mkz28NvaU4INPkZMmaSrGx8UWAaRPn-U_asv-fd6MrYt5XRaK9rF_fH8lJmJfLwgDr55rBuVF6VS1nfs2VC5JC_bI-9th7iWXtIcKuB3MSe4JZD35Jr";
-        //UserAuth userAuth = UserAuth.userAuth(uid, roomId, token);
         log.info("UserAuth: {}", JSON.toJSONString(userAuth));
-        client().connect(new WsClient.Config()
+        Config.config()
                 .url(getWssUrl(danmuInfo.getData()))
+                .userAuth(userAuth)
                 .logLevel(LogLevel.INFO)
-                .handler(new HandlerImpl(userAuth)));
+                .handler(new HandlerImpl())
+                .connect();
     }
 
-    public static WsClient client() {
-        return new DefaultWsClient();
-    }
-
-
-    //host: "tx-bj-live-comet-03.chat.bilibili.com"
-    //port: 2243
-    //ws_port: 2244
-    //wss_port: 443
-    //token
-    //wss://tx-bj-live-comet-03.chat.bilibili.com/sub
     public static String getWssUrl(DanmuInfoResult.DanmuInfo info) {
         DanmuInfoResult.Host host = info.getHost_list().get(0);
-        // return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
-        // return "wss://" + host.getHost() + "/sub";
-        // return "ws://" + host.getHost() + ":" + host.getWs_port() + "/sub";
         return "wss://" + host.getHost() + ":" + host.getWss_port() + "/sub";
     }
 
     @RequiredArgsConstructor
     public static class HandlerImpl implements ClientHandler {
 
-        private final UserAuth userAuth;
-
         @Override
         public void connected(WsClient client) {
             log.info("[WebSocket] Connected.");
-            client.delay(() -> {
-                log.info("[WebSocket] Send UserAuth.");
-                client.send(Protocol.userAuth(userAuth).flip());
-            }, 2);
         }
 
         @Override
         public void message(WsClient client, BiliWsPackage message) {
             log.info("[WebSocket] Recv Message: {}", message);
-
-            switch (Operation.valueOf(message.getOperation())) {
-                case ConnectSuccess:
-                    client.startHeartBeatTask(0);
-                    break;
-
-                default:
-                    log.info("[WebSocket] not handler for opcode={}", message.getOperation());
-            }
         }
 
         @Override

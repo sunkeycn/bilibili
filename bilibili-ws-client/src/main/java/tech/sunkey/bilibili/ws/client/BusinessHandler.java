@@ -7,7 +7,9 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import tech.sunkey.bilibili.ws.dto.BiliWsPackage;
+import tech.sunkey.bilibili.ws.dto.Operation;
 import tech.sunkey.bilibili.ws.utils.Protocol;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
  * @author Sunkey
  * @since 2021-01-11 11:52 上午
  **/
+
+@Slf4j
 @RequiredArgsConstructor
 public class BusinessHandler extends SimpleChannelInboundHandler<Object> {
 
@@ -38,12 +42,17 @@ public class BusinessHandler extends SimpleChannelInboundHandler<Object> {
         handshaker.handshake(ctx.channel());
     }
 
+    protected void handleHandshake() {
+        log.info("[WebSocket] Send UserAuth.");
+        client.send(Protocol.userAuth(client.getConfig().getUserAuth()).flip());
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Object msg) {
         if (!handshaker.isHandshakeComplete()) {
             try {
                 handshaker.finishHandshake(ctx.channel(), ((FullHttpResponse) msg));
-                handler.connected(client);
+                handleHandshake();
                 handshakePromise.setSuccess();
             } catch (WebSocketHandshakeException ex) {
                 handshakePromise.setFailure(ex);
@@ -57,7 +66,24 @@ public class BusinessHandler extends SimpleChannelInboundHandler<Object> {
     protected void readBinaryWebSocketFrame(BinaryWebSocketFrame frame) {
         List<BiliWsPackage> list = Protocol.read(frame.content());
         for (BiliWsPackage pkg : list) {
-            handler.message(client, pkg);
+            handleMessage(pkg);
+        }
+    }
+
+    protected void handleMessage(BiliWsPackage pkg) {
+        log.info("[WebSocket] Recv Message: {}", pkg);
+        switch (Operation.valueOf(pkg.getOperation())) {
+            case Message:
+                handler.message(client, pkg);
+                break;
+            case ConnectSuccess:
+                client.startHeartBeatTask(0);
+                break;
+            case HeartBeatReply:
+                handler.connected(client);
+                break;
+            default:
+                log.info("[WebSocket] not handler for opcode={}", pkg.getOperation());
         }
     }
 
@@ -71,7 +97,7 @@ public class BusinessHandler extends SimpleChannelInboundHandler<Object> {
         } else if (frame instanceof TextWebSocketFrame) {
             readTextWebSocketFrame(((TextWebSocketFrame) frame));
         } else if (frame instanceof CloseWebSocketFrame) {
-            ctx.channel().close();
+            handshaker.close(ctx.channel(), ((CloseWebSocketFrame) frame));
         }
     }
 
