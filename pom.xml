@@ -11,6 +11,7 @@
         <module>bilibili-ws-client</module>
         <module>bilibili-platform</module>
         <module>bilibili-api</module>
+        <module>bilibili-jfx</module>
     </modules>
 
     <packaging>pom</packaging>
