@@ -12,6 +12,7 @@
         <module>bilibili-platform</module>
         <module>bilibili-api</module>
         <module>bilibili-jfx</module>
+        <module>bilibili-game</module>
     </modules>
 
     <packaging>pom</packaging>
