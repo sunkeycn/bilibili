@@ -15,6 +15,7 @@ public class MainController {
 
     public void clickBtn(ActionEvent event) {
         System.out.println("Clicked");
+        myBtn.setText("CCCCCC");
     }
 
 }
