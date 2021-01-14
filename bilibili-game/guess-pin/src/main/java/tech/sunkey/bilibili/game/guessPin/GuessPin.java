@@ -1,5 +1,7 @@
 package tech.sunkey.bilibili.game.guessPin;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +19,18 @@ public class GuessPin {
     private final GuessPinConfig config;
     private final AtomicInteger times = new AtomicInteger();
 
+    @Getter
+    private boolean gameWin;
+    @Getter
+    private boolean gameOver;
+
     public GuessPin(GuessPinConfig config) {
         this.config = config;
         this.pins = randomPins(config.getPinCount());
+    }
+
+    public int getTimes() {
+        return times.get();
     }
 
     public GuessResult guess(List<PinData> guessPins) {
@@ -30,6 +41,7 @@ public class GuessPin {
         int curTimes = times.incrementAndGet();
         if (curTimes > config.getGuessTimes()) {
             result.setGameOver(true);
+            this.gameOver = true;
             return result;
         }
         Set<PinData.Colour> allColors = new HashSet<>();
@@ -46,6 +58,7 @@ public class GuessPin {
             }
         }
         result.setGameWin(win);
+        this.gameWin = win;
         return result;
     }
 

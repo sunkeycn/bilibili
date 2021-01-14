@@ -12,7 +12,11 @@
     <artifactId>bilibili-platform</artifactId>
 
     <dependencies>
-
+        <dependency>
+            <groupId>tech.sunkey</groupId>
+            <artifactId>guess-pin</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <dependency>
             <groupId>tech.sunkey</groupId>
             <artifactId>bilibili-ws-client</artifactId>

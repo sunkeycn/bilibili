@@ -2,7 +2,10 @@ package tech.sunkey.bilibili.business;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import tech.sunkey.bilibili.utils.BilibiliUtils;
+import tech.sunkey.bilibili.vo.DanmuVO;
 import tech.sunkey.bilibili.ws.dto.event.*;
 import tech.sunkey.bilibili.ws.event.Event;
 import tech.sunkey.bilibili.ws.event.EventHandler;
@@ -14,7 +17,11 @@ import tech.sunkey.bilibili.ws.event.EventType;
  **/
 
 @Slf4j
+@Component
 public class LiveEventHandler extends EventHandler {
+
+    @Autowired
+    private GameBusiness gameBusiness;
 
     @Event(EventType.Unknown)
     public void handleEvent(JSONObject data) {
@@ -39,7 +46,9 @@ public class LiveEventHandler extends EventHandler {
     @Event(EventType.DANMU_MSG)
     public void handleDanmuMsg(DanmuMsg data) {
         // log.info("DanmuMsg=>{}", data);
-        log.info("弹幕:{}", BilibiliUtils.convert(data));
+        // log.info("弹幕:{}", BilibiliUtils.convert(data));
+        DanmuVO danmu = BilibiliUtils.convert(data);
+        gameBusiness.handleDanmu(danmu);
     }
 
     @Event(EventType.COMBO_SEND)
