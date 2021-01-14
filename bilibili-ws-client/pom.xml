@@ -32,16 +32,6 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.onway.hestia</groupId>
-            <artifactId>common-utils</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--<dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-example</artifactId>
-            <scope>test</scope>
-        </dependency>-->
     </dependencies>
 
 </project>
