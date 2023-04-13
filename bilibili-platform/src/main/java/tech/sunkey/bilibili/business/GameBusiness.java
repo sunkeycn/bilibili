@@ -24,7 +24,7 @@ public class GameBusiness {
 
     @PostConstruct
     public void init() {
-        restartGame();
+       // restartGame();
     }
 
     public void restartGame() {

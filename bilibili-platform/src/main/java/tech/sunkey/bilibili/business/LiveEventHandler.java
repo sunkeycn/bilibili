@@ -22,10 +22,12 @@ public class LiveEventHandler extends EventHandler {
 
     @Autowired
     private GameBusiness gameBusiness;
+    @Autowired
+    private ChatGptBusiness chatGptBusiness;
 
     @Event(EventType.Unknown)
     public void handleEvent(JSONObject data) {
-        log.info("HandleEvent=>{}", data);
+        //log.info("UnknownEvent=>{}", data);
     }
 
     @Event(EventType.INTERACT_WORD)
@@ -46,9 +48,10 @@ public class LiveEventHandler extends EventHandler {
     @Event(EventType.DANMU_MSG)
     public void handleDanmuMsg(DanmuMsg data) {
         // log.info("DanmuMsg=>{}", data);
-        // log.info("弹幕:{}", BilibiliUtils.convert(data));
         DanmuVO danmu = BilibiliUtils.convert(data);
-        gameBusiness.handleDanmu(danmu);
+        log.info("弹幕:{}", danmu);
+        //gameBusiness.handleDanmu(danmu);
+        chatGptBusiness.handleMsg(danmu);
     }
 
     @Event(EventType.COMBO_SEND)
